@@ -34,13 +34,11 @@
 <body>
 	<!-- container section start -->
 	<section id="container" class="">
-	
+
 		<div id="menu">
-			<script type="text/javascript">
-				$('#menu').load('menu.html' );
-			</script>
+			<!-- Wird per Javascript geladen -->
 		</div>
-		
+
 		<section id="main-content">
 			<section class="wrapper">
 				<!--overview start-->
@@ -56,7 +54,7 @@
 					</div>
 				</div>
 
-			<!-- Rules Start  -->
+				<!-- Rules Start  -->
 				<div class="row">
 					<div class="col-lg-12">
 						<section class="panel panel-default">
@@ -85,14 +83,14 @@
 					</div>
 				</div>
 				<!-- Rules End -->
-		
+
 			</section>
 		</section>
 		<!--main content end-->
 	</section>
-	<!-- container section start -->	
-		
-<!-- javascripts -->
+	<!-- container section start -->
+
+	<!-- javascripts -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 	<!-- bootstrap -->
@@ -105,95 +103,79 @@
 	<script src="https://cdn.jsdelivr.net/placeholders/3.0.2/placeholders.min.js"></script>
 	<!--custome script for all page-->
 	<script src="js/scripts.js"></script>
+	<script type="text/javascript" src="js/myScripts.js"></script>
 	<script>
-	var countMax = 20;    
-	var serverUrl = "http://localhost:8080/";
-	var rulesArray = [];
+	var countMax = 20;
 
-	 function switchFulfilledState(flag, ruleId) {
-	    var rule =  $.grep(rulesArray, function(e){ return e.id == ruleId; })[0]; 
+	function switchFulfilledState(flag, ruleId) {
+	    var rule = $.grep(rulesArray, function(e) {
+		return e.id == ruleId;
+	    })[0];
 	    rule.fulfilled = flag;
-    	$.ajax({ 
-	 	   headers: { 
-	 	        'Accept': 'application/json',
-	 	        'Content-Type': 'application/json' 
-	 	    },
-	 	    'type': 'POST',
-	 	    'url': serverUrl + 'rules',
-	 	    'data': JSON.stringify(rule),
-	 	    'dataType': 'json',
-	 	    'success': function(data) {
-	 			var classAttribute
-	 			data.fulfilled ? classAttribute = 'success' : classAttribute = 'danger';
-	 			$("#"+ ruleId).hide().html(getRuleRowContentAsString(data)).attr('class', classAttribute).fadeIn('fast');
-	 			
-	 			 $.ajax({
-	 				url : serverUrl + "rules/todoCount"
-	 		    }).then(function(data){
-	 				$('#todoCount').html(data);
-	 		    });
-		    } 
- 	    }); 
-    }; 
-	
-    function getRuleRowString(rule) {
-		return '<tr id="' + rule.id + '" style="display: table-row;">'
-			+ getRuleRowContentAsString(rule)
-			+'</tr>';
-    };
-    
-    function getRuleRowContentAsString(rule) {
-		var date = new Date(rule.date);
-		var rowString = '<td>' + rule.id + '</td>'
-		+ '<td>' + rule.name + '</td>'
-		+ '<td>' + rule.description + '</td>'
-		+ '<td>' + ((date == 0)? '0.0.0000' : date.toLocaleDateString()) + '</td>'
-		+ '<td><i class="' + ((rule.fulfilled)? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-remove') + '"></i></a></td>'
-		+ '<td><div class="btn-group">'
-			+ '<a class="btn btn-primary"><i class="icon_plus_alt2"></i></a>'
-			+ '<a class="btn btn-success"><i class="icon_check_alt2"></i></a>'
-			+ '<a class="btn btn-danger"><i class="icon_close_alt2"></i></a>'
-		+ '</div></td>';
-		return rowString;
-    };
-    
+	    $.ajax({
+		headers : {
+		    'Accept' : 'application/json',
+		    'Content-Type' : 'application/json'
+		},
+		'type' : 'POST',
+		'url' : serverUrl + 'rules',
+		'data' : JSON.stringify(rule),
+		'dataType' : 'json',
+		'success' : function(data) {
+		    var classAttribute
+		    data.fulfilled ? classAttribute = 'success' : classAttribute = 'danger';
+		    $("#" + ruleId).hide().html(getRuleRowContentAsString(data)).attr('class', classAttribute).fadeIn('fast');
+
+		    $.ajax({
+			url : serverUrl + "rules/todoCount"
+		    }).then(function(data) {
+			$('#todoCount').html(data);
+		    });
+		}
+	    });
+	};
+
 	$(document).ready(function() {
+	    var tempurl = serverUrl + "rules"
+	    if (getQueryVariable("name") !== false) {
+		tempurl = tempurl + "/search?name=" + getQueryVariable("name");
+	    }
+
 	    /* Rules-Liste füllen */
 	    $.ajax({
-			url : serverUrl + "rules"
-	    }).then(function(data){
-			$('#rulecount').html(data.length);
-			rulesArray = data;
-			for (var i in data) {
-			    if (i >= countMax) {
-					break;
-			    }
-			    rule = data[i];
-			    $('.ruleDataList').append(getRuleRowString(rule));
-			}
-	    });
-	    
-	});
-	
-	$(document).on('click', '.btn-success', function(){
-	    var ruleId = $(this).closest('tr').attr('id');
-		switchFulfilledState(true, ruleId);
-  	});
-    $(document).on('click', '.btn-danger', function(){
-		var ruleId = $(this).closest('tr').attr('id');
-		switchFulfilledState(false, ruleId);
-  	});
-    $(document).on('click', '.btn-primary', function(){
-		var ruleId = $(this).closest('tr').attr('id');
-		window.location = 'editrule.html?id=' + ruleId;
-  	});
-    
-		
-    /* Strg + Mausrad blockieren */
-    $(window).bind('mousewheel DOMMouseScroll', function(event) {
-	    if(event.ctrlKey == true) {
-	    	event.preventDefault(); 
+		url : tempurl
+	    }).then(function(data) {
+		$('#rulecount').html(data.length);
+		rulesArray = data;
+		for ( var i in data) {
+		    if (i >= countMax) {
+			break;
+		    }
+		    rule = data[i];
+		    $('.ruleDataList').append(getRuleRowString(rule));
 		}
+	    });
+
+	});
+
+	$(document).on('click', '.btn-success', function() {
+	    var ruleId = $(this).closest('tr').attr('id');
+	    switchFulfilledState(true, ruleId);
+	});
+	$(document).on('click', '.btn-danger', function() {
+	    var ruleId = $(this).closest('tr').attr('id');
+	    switchFulfilledState(false, ruleId);
+	});
+	$(document).on('click', '.btn-primary', function() {
+	    var ruleId = $(this).closest('tr').attr('id');
+	    window.location = 'editrule.html?id=' + ruleId;
+	});
+
+	/* Strg + Mausrad blockieren */
+	$(window).bind('mousewheel DOMMouseScroll', function(event) {
+	    if (event.ctrlKey == true) {
+		event.preventDefault();
+	    }
 	});
     </script>
 

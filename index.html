@@ -36,9 +36,7 @@
 	<section id="container" class="">
 	
 		<div id="menu">
-			<script type="text/javascript">
-				$('#menu').load('menu.html' );
-			</script>
+			<!-- Wird per Javascript geladen -->
 		</div>
 		
 		<!--main content start-->
@@ -187,57 +185,8 @@
 	<script src="https://cdn.jsdelivr.net/placeholders/3.0.2/placeholders.min.js"></script>
 	<!--custome script for all page-->
 	<script src="js/scripts.js"></script>
+	<script type="text/javascript" src="js/myScripts.js"></script>
 	<script>
-	var serverUrl = "http://localhost:8080/";
-	var rulesArray = [];
-
-	 function switchFulfilledState(flag, ruleId) {
-	    var rule =  $.grep(rulesArray, function(e){ return e.id == ruleId; })[0]; 
-	    rule.fulfilled = flag;
-    	$.ajax({ 
-	 	   headers: { 
-	 	        'Accept': 'application/json',
-	 	        'Content-Type': 'application/json' 
-	 	    },
-	 	    'type': 'POST',
-	 	    'url': serverUrl + 'rules',
-	 	    'data': JSON.stringify(rule),
-	 	    'dataType': 'json',
-	 	    'success': function(data) {
-	 			var classAttribute
-	 			data.fulfilled ? classAttribute = 'success' : classAttribute = 'danger';
-	 			$("#"+ ruleId).hide().html(getRuleRowContentAsString(data)).attr('class', classAttribute).fadeIn('fast');
-	 			
-	 			 $.ajax({
-	 				url : serverUrl + "rules/todoCount"
-	 		    }).then(function(data){
-	 				$('#todoCount').html(data);
-	 		    });
-		    } 
- 	    }); 
-    }; 
-	
-    function getRuleRowString(rule) {
-		return '<tr id="' + rule.id + '" style="display: table-row;">'
-			+ getRuleRowContentAsString(rule)
-			+'</tr>';
-    };
-    
-    function getRuleRowContentAsString(rule) {
-		var date = new Date(rule.date);
-		var rowString = '<td>' + rule.id + '</td>'
-		+ '<td>' + rule.name + '</td>'
-		+ '<td>' + rule.description + '</td>'
-		+ '<td>' + ((date == 0)? '0.0.0000' : date.toLocaleDateString()) + '</td>'
-		+ '<td><i class="' + ((rule.fulfilled)? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-remove') + '"></i></a></td>'
-		+ '<td><div class="btn-group">'
-			+ '<a class="btn btn-primary"><i class="icon_plus_alt2"></i></a>'
-			+ '<a class="btn btn-success"><i class="icon_check_alt2"></i></a>'
-			+ '<a class="btn btn-danger"><i class="icon_close_alt2"></i></a>'
-		+ '</div></td>';
-		return rowString;
-    };
-    
 	$(document).ready(function() {
 	    /* User-Liste füllen */
 	    $.ajax({
@@ -276,7 +225,7 @@
 	    }).then(function(data){
 			$('#todoCount').html(data);
 	    });
-	    
+	     
 	    
 	    /* Strg + Mausrad blockieren */
 	    $(window).bind('mousewheel DOMMouseScroll', function(event) {
@@ -298,6 +247,7 @@
 			window.location = 'editrule.html?id=' + ruleId;
 	  	});
 	    
+
 	    
 	});
     </script>
