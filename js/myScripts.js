@@ -7,6 +7,7 @@ function switchFulfilledState(flag, ruleId) {
     var rule = $.grep(rulesArray, function(e) {
 	return e.id == ruleId;
     })[0];
+    
     rule.fulfilled = flag;
     $.ajax({
 	headers : {
@@ -40,7 +41,7 @@ function getRuleRowContentAsString(rule) {
     var rowString = '<td>' + rule.id + '</td>' + '<td>' + rule.name + '</td>' + '<td>' + rule.description + '</td>' + '<td>'
 	    + ((date == 0) ? '0.0.0000' : date.toLocaleDateString()) + '</td>' + '<td><i class="'
 	    + ((rule.fulfilled) ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-remove') + '"></i></a></td>' + '<td><div class="btn-group">'
-	    + '<a class="btn btn-primary"><i class="icon_plus_alt2"></i></a>' + '<a class="btn btn-success"><i class="icon_check_alt2"></i></a>'
+	    + '<a id="btn-edit" class="btn btn-primary"><i class="icon_plus_alt2"></i></a>' + '<a id="btnSolveRule" class="btn btn-success"><i class="icon_check_alt2"></i></a>'
 	    + '<a class="btn btn-danger"><i class="icon_close_alt2"></i></a>' + '</div></td>';
     return rowString;
 };
@@ -133,6 +134,15 @@ $(document).ready(function() {
 		jQuery("#container").removeClass("sidebar-closed");
 	    }
 	});
-
+	
+	/* Q-Politik in den Header wenn gefüllt*/
+	$.ajax({
+	    url : serverUrl + "rules/get?id=" + "1"
+	}).then(function(data) {
+	    if (data.fulfilled) {
+		$('#QPolitik').append(" - " + data.category.politik);
+	    }
+	});
+	
     });
 });

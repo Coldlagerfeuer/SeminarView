@@ -8,7 +8,7 @@
 <meta name="keyword" content="Creative, Dashboard, Admin, Template, Theme, Bootstrap, Responsive, Retina, Minimal">
 <link rel="shortcut icon" href="img/favicon.png">
 
-<title>BK QM </title>
+<title>BK QM</title>
 
 <!--external css-->
 <!-- font icon -->
@@ -34,11 +34,11 @@
 <body>
 	<!-- container section start -->
 	<section id="container" class="">
-	
+
 		<div id="menu">
 			<!-- Wird per Javascript geladen -->
 		</div>
-		
+
 		<!--main content start-->
 		<section id="main-content">
 			<section class="wrapper">
@@ -165,16 +165,19 @@
 					<!--/col-->
 				</div>
 				<!-- Users end -->
-				
+
+				<!-- Modal -->
+				<div id='modalPlaceholder'></div>
 			</section>
 		</section>
 		<!--main content end-->
 	</section>
 	<!-- container section start -->
 
-<!-- javascripts -->
+	<!-- javascripts -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+	<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.10.0/jquery.validate.min.js"></script>
 	<!-- bootstrap -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 	<!-- nice scroll -->
@@ -187,30 +190,33 @@
 	<script src="js/scripts.js"></script>
 	<script type="text/javascript" src="js/myScripts.js"></script>
 	<script>
+	var currentModalId;
+	var currentRuleId;
+	
 	$(document).ready(function() {
 	    /* User-Liste füllen */
 	    $.ajax({
-		url : serverUrl + "users"
+			url : serverUrl + "users"
 	    }).then(function(data) {
 			$('#usercount').html(data.length);
 			for ( var i in data) {
 			    user = data[i];
 			    $('.userDataList').append(
-					'<tr>'
-			    		+ '<td>' + user.id + '</td>'
-			    		+ '<td>' + user.name + '</td>'
-			    		+ '<td>' + user.password + '</td>'
-	    			+'</tr>');
+				    '<tr>' 
+				    + '<td>' + user.id + '</td>' 
+				    + '<td>' + user.name + '</td>' 
+				    + '<td>' + user.password + '</td>'
+					+ '</tr>');
 			}
-	    });
+		});
 
 	    /* Rules-Liste füllen */
 	    $.ajax({
 			url : serverUrl + "rules"
-	    }).then(function(data){
+	    }).then(function(data) {
 			$('#rulecount').html(data.length);
 			rulesArray = data;
-			for (var i in data) {
+			for ( var i in data) {
 			    if (i >= 5) {
 					break;
 			    }
@@ -218,38 +224,79 @@
 			    $('.ruleDataList').append(getRuleRowString(rule));
 			}
 	    });
-		
+
 	    /* Todo Count */
 	    $.ajax({
 			url : serverUrl + "rules/todoCount"
-	    }).then(function(data){
+	    }).then(function(data) {
 			$('#todoCount').html(data);
 	    });
-	     
-	    
+
 	    /* Strg + Mausrad blockieren */
 	    $(window).bind('mousewheel DOMMouseScroll', function(event) {
-		    if(event.ctrlKey == true) {
-		    	event.preventDefault(); 
+			if (event.ctrlKey == true) {
+			    event.preventDefault();
 			}
-		});
-	    
-	    $(document).on('click', '.btn-success', function(){
-		    var ruleId = $(this).closest('tr').attr('id');
-			switchFulfilledState(true, ruleId);
-	  	});
-	    $(document).on('click', '.btn-danger', function(){
+	    });
+
+	    $(document).on('click', '#btnSolveRule', function() {
+		 	var ruleId = $(this).closest('tr').attr('id');
+		 	currentRuleId = ruleId;
+		 	
+			var rule = $.grep(rulesArray, function(e) {
+			    return e.id == ruleId;
+				})[0]; 
+			
+			switch (rule.category.name) {
+				case "POLITIK": $('#modalPlaceholder').load('dialogs.html #modalPolitik', function() {
+					    currentModalId = '#modalPolitik';
+					    $('#modalPolitik').modal('toggle');
+					    $('#message-text').val(rule.category.politik);
+					});
+					break;
+				case "MARK":
+				    switchFulfilledState(true, currentRuleId);
+				    break;
+				default:
+				    switchFulfilledState(true, currentRuleId);
+					alert("not yet implemented");
+			}
+			 
+			
+	    });
+	    $(document).on('click', '.btn-danger', function() {
 			var ruleId = $(this).closest('tr').attr('id');
 			switchFulfilledState(false, ruleId);
-	  	});
-	    $(document).on('click', '.btn-primary', function(){
+	    });
+	    $(document).on('click', '#btn-edit', function() {
 			var ruleId = $(this).closest('tr').attr('id');
 			window.location = 'editrule.html?id=' + ruleId;
-	  	});
+	    });
+	});
+		
+	function processModalInput() {
+	    $(currentModalId).modal('toggle');
+	    var rule = $.grep(rulesArray, function(e) {
+			return e.id == currentRuleId;
+	    })[0];
+	    
+	    switch (rule.category.name) {
+			case "POLITIK": 
+			    rule.category.politik = $('#message-text').val();
+				console.log(rule);
+				break;
+		}
+    	switchFulfilledState(true, currentRuleId);
+	}
+	    
 	    
 
 	    
-	});
+	    
+	    
+	
+
+	
     </script>
 
 </body>
