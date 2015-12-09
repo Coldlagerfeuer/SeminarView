@@ -139,63 +139,49 @@
 	    id = getUrlParameter('id');
 
 	    $.ajax({
-		url : serverUrl + "rules/get?id=" + id
+			url : serverUrl + "rules/get?id=" + id
 	    }).then(function(data) {
-		currentRule = data;
-		$('#ruleId').val(currentRule.id);
-		$('#ruleName').val(currentRule.name);
-		$('#ruleDescription').html(currentRule.description);
-
-		$('#stateCol').append('<i class="' + ((currentRule.fulfilled) ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-remove') + '"></i>');
+			currentRule = data;
+			$('#ruleId').val(currentRule.id);
+			$('#ruleName').val(currentRule.name);
+			$('#ruleDescription').html(currentRule.description);
+			$('#stateCol').append('<i class="' + ((currentRule.fulfilled) ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-remove') + '"></i>');
 	    });
 
 	});
 
 	/* Button Save */
-	$(document)
-		.on(
-			'click',
-			'.btn-primary',
-			function() {
-			    currentRule.name = $('#ruleName').val();
-			    currentRule.description = $('#ruleDescription').val();
-			    currentRule.fulfilled = $('#stateCol').find('.glyphicon').hasClass('glyphicon-ok') ? true : false;
-			    $
-				    .ajax({
-					headers : {
-					    'Accept' : 'application/json',
-					    'Content-Type' : 'application/json'
-					},
-					'type' : 'POST',
-					'url' : serverUrl + 'rules',
-					'data' : JSON.stringify(currentRule),
-					'dataType' : 'json',
-					'success' : function(data) {
-					    $('#alertCol')
-						    .append(
-							    '<div class="alert alert-success fade in" id="alertSuccess">'
-								    + '<a href="" class="close" data-dismiss="alert">&times;</a> <strong>Success!</strong>'
-								    + 'Your message has been sent successfully. You will be redirected'
-								    + '</div>')
-					    setTimeout(function() {
-						window.location.href = "/index.html";
-					    }, 2000);
-					}
-				    });
-
-			});
+	$(document).on('click', '.btn-primary',	function() {
+	    currentRule.name = $('#ruleName').val();
+	    currentRule.description = $('#ruleDescription').val();
+	    currentRule.fulfilled = $('#stateCol').find('.glyphicon').hasClass('glyphicon-ok') ? true : false;
+	    $.ajax({
+			headers : {
+			    'Accept' : 'application/json',
+			    'Content-Type' : 'application/json'
+			},
+			'type' : 'POST',
+			'url' : serverUrl + 'rules',
+			'data' : JSON.stringify(currentRule),
+			'dataType' : 'json',
+			'success' : function(data) {
+			    $('#alertCol').append(
+					    '<div class="alert alert-success fade in" id="alertSuccess">'
+						    + '<a href="" class="close" data-dismiss="alert">&times;</a> <strong>Success!</strong>'
+						    + 'Your message has been sent successfully. You will be redirected'
+						    + '</div>')
+			    setTimeout(function() {
+					window.location.href = "/index.html";
+					}, 2000);
+				}
+	    });
+	});
 
 	/* Button Cancel */
 	$(document).on('click', '.btn-danger', function() {
 	    window.location = 'index.html';
 	});
 
-	/* Strg + Mausrad blockieren */
-	$(window).bind('mousewheel DOMMouseScroll', function(event) {
-	    if (event.ctrlKey == true) {
-		event.preventDefault();
-	    }
-	});
     </script>
 
 </body>
