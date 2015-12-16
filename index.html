@@ -67,7 +67,7 @@
 					<!--/.col-->
 
 					<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-						<div class="info-box brown-bg">
+						<div class="info-box brown-bg" id="todoBox">
 							<i class="fa fa-shopping-cart"></i>
 							<div id="todoCount" class="count">0</div>
 							<div class="title">Todo</div>
@@ -77,7 +77,7 @@
 					<!--/.col-->
 
 					<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-						<div class="info-box dark-bg">
+						<div class="info-box dark-bg" id="rulesBox">
 							<i class="fa fa-thumbs-o-up"></i>
 							<div id="rulecount" class="count">0</div>
 							<div class="title">Rules</div>
@@ -232,6 +232,14 @@
 			$('#todoCount').html(data);
 	    });
 
+	    $(document).on('click', '#todoBox', function(){
+			window.location.href = '/list_rules.html?todo=true';
+	    });
+	    
+	    $(document).on('click', '#rulesBox', function(){
+			window.location.href = '/list_rules.html';
+	    });
+	    
 	    /* Strg + Mausrad blockieren */
 	    $(window).bind('mousewheel DOMMouseScroll', function(event) {
 			if (event.ctrlKey == true) {
@@ -259,7 +267,6 @@
 				    break;
 				default:
 				    switchFulfilledState(true, currentRuleId);
-					alert("not yet implemented");
 			}
 			 
 			
@@ -289,15 +296,6 @@
     	switchFulfilledState(true, currentRuleId);
 	}
 	    
-	    
-
-	    
-	    
-	    
-	
-
-	
     </script>
-
 </body>
 </html>

@@ -106,7 +106,7 @@
 	<script type="text/javascript" src="js/myScripts.js"></script>
 	<script>
 	var countMax = 20;
-
+/* 
 	function switchFulfilledState(flag, ruleId) {
 	    var rule = $.grep(rulesArray, function(e) {
 		return e.id == ruleId;
@@ -133,12 +133,14 @@
 		    });
 		}
 	    });
-	};
+	}; */
 
 	$(document).ready(function() {
 	    var tempurl = serverUrl + "rules"
 	    if (getQueryVariable("name") !== false) {
-		tempurl = tempurl + "/search?name=" + getQueryVariable("name");
+			tempurl = tempurl + "/search?name=" + getQueryVariable("name");
+	    } else if (getQueryVariable("todo") !== false) {
+			tempurl = tempurl + "/todo";
 	    }
 
 	    /* Rules-Liste füllen */
